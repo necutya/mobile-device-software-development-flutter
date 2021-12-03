@@ -1,16 +1,24 @@
+import 'package:base/models/dark_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:provider/provider.dart';
 import 'package:base/pages/main.dart';
 import 'package:base/pages/library.dart';
 import 'models/composition.dart';
-import 'components.dart';
+import 'common/components.dart';
 
-void main() => runApp(ChangeNotifierProvider(
-    create: (context) => Library(),
-    child: MaterialApp(
-      home: SpotifyMain(),
-    )));
+void main() => runApp(MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (context) => Library(),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => DarkThemeProvider(),
+          )
+        ],
+        child: MaterialApp(
+          home: SpotifyMain(),
+        )));
 
 class SpotifyMain extends StatefulWidget {
   const SpotifyMain({Key? key}) : super(key: key);
@@ -20,7 +28,20 @@ class SpotifyMain extends StatefulWidget {
 }
 
 class _SpotifyMainState extends State<SpotifyMain> {
+  late DarkThemeProvider themeChangeProvider = new DarkThemeProvider();
+
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentAppTheme();
+  }
+
+  void getCurrentAppTheme() async {
+    themeChangeProvider.darkTheme =
+        await themeChangeProvider.darkThemePreference.getTheme();
+  }
 
   void _handlePageTap(int index) {
     setState(() {
@@ -30,18 +51,36 @@ class _SpotifyMainState extends State<SpotifyMain> {
 
   @override
   Widget build(BuildContext context) {
-    List<StatelessWidget> _widgetOptions = <StatelessWidget>[
-      MainPage(),
-      MainPage(),
-      LibraryPage()
+    List<Widget> _widgetOptions = <Widget>[
+      MainPage(
+        dtp: themeChangeProvider,
+      ),
+      MainPage(
+        dtp: themeChangeProvider,
+      ),
+      LibraryPage(
+        dtp: themeChangeProvider,
+      )
     ];
 
     return Scaffold(
       body: LayoutBuilder(builder: (context, constraint) {
         return SingleChildScrollView(
             child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraint.maxHeight, minWidth: constraint.maxWidth),
-                child: _widgetOptions.elementAt(_selectedIndex)));
+          constraints: BoxConstraints(
+              minHeight: constraint.maxHeight, minWidth: constraint.maxWidth),
+          child: Container(
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment(-0.6, -0.6),
+                colors: [
+                  CustomColors(themeChangeProvider.darkTheme).mainColor,
+                  CustomColors(themeChangeProvider.darkTheme).backgroundColor,
+                ],
+              )),
+              child: _widgetOptions.elementAt(_selectedIndex)),
+        ));
       }),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Color(0xff2c2c2c),
@@ -59,8 +98,10 @@ class _SpotifyMainState extends State<SpotifyMain> {
             label: 'My library',
           ),
         ],
-        selectedItemColor: spotifyColors['white'],
-        unselectedItemColor: spotifyColors['light_grey'],
+        selectedItemColor:
+            CustomColors(themeChangeProvider.darkTheme).activeColor,
+        unselectedItemColor:
+            CustomColors(themeChangeProvider.darkTheme).inActiveColor,
         onTap: _handlePageTap,
         currentIndex: _selectedIndex,
       ),

@@ -1,42 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:provider/provider.dart';
-import 'models/composition.dart';
+import '../models/composition.dart';
 
 const gothamFont = 'Gotham';
-const spotifyColors = <String, Color>{
-  'white': Colors.white,
-  'green': Color(0xff2F8E50),
-  'light_green': Color(0xff1ed760),
-  'black': Color(0xff121212),
-  'grey': Color(0xff272727),
-  'light_grey': Color(0xff636363),
-};
 
-class MyLibrryPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment(-0.6, -0.6),
-          colors: [
-            spotifyColors['green'] ?? Colors.green,
-            spotifyColors['black'] ?? Colors.black,
-          ],
-        )),
-        child: Padding(
-            padding: EdgeInsets.fromLTRB(20, 55, 20, 5),
-            // Nav bar
-            child: Column()));
+class CustomColors {
+  late Color backgroundColor;
+  late Color textColor;
+  late Color tileColor;
+  late Color activeColor;
+  late Color inActiveColor;
+  late Color mainColor;
+  late Color black;
+  late Color white;
+  late Color lightGrey;
+
+  CustomColors(bool isDarkTheme) {
+    mainColor = Color(0xff2F8E50);
+    backgroundColor = isDarkTheme ? Color(0xff121212) : Colors.white;
+    textColor = isDarkTheme ? Colors.white : Color(0xff121212);
+    activeColor = Colors.white;
+    inActiveColor = Color(0xff636363);
+    black = Color(0xff121212);
+    white = Colors.white;
+    lightGrey = isDarkTheme ? Color(0xff636363) : Color(0xff272727);
+    tileColor =
+        isDarkTheme ? Colors.grey.withOpacity(0.2) : black.withOpacity(0.6);
   }
 }
 
 class Tile extends StatelessWidget {
   final String imageSrc, text;
-
-  const Tile({Key? key, required this.imageSrc, required this.text})
+  final bool isDarkTheme;
+  const Tile(
+      {Key? key,
+      required this.imageSrc,
+      required this.text,
+      required this.isDarkTheme})
       : super(key: key);
 
   @override
@@ -58,22 +59,26 @@ class Tile extends StatelessWidget {
               maxLines: 2,
               style: TextStyle(
                   fontWeight: FontWeight.w400,
-                  color: spotifyColors['light_grey'],
+                  color: CustomColors(this.isDarkTheme).lightGrey,
                   fontSize: 14),
             ),
           ],
         ),
         alignment: Alignment.center,
       ),
-      color: spotifyColors['black'],
+      color: CustomColors(this.isDarkTheme).backgroundColor,
     );
   }
 }
 
 class RoundedTile extends StatelessWidget {
   final String imageSrc, text;
-
-  const RoundedTile({Key? key, required this.imageSrc, required this.text})
+  final bool isDarkTheme;
+  const RoundedTile(
+      {Key? key,
+      required this.imageSrc,
+      required this.text,
+      required this.isDarkTheme})
       : super(key: key);
 
   @override
@@ -99,7 +104,7 @@ class RoundedTile extends StatelessWidget {
                 maxLines: 2,
                 style: TextStyle(
                     fontWeight: FontWeight.w900,
-                    color: spotifyColors['white'],
+                    color: CustomColors(this.isDarkTheme).textColor,
                     fontSize: 14),
               ),
             ),
@@ -107,7 +112,7 @@ class RoundedTile extends StatelessWidget {
         ),
         alignment: Alignment.center,
       ),
-      color: spotifyColors['black'],
+      color: CustomColors(this.isDarkTheme).backgroundColor,
     );
   }
 }
@@ -115,7 +120,12 @@ class RoundedTile extends StatelessWidget {
 class DayMixin extends StatelessWidget {
   final String imageSrc;
   final String text;
-  const DayMixin({Key? key, required this.imageSrc, required this.text})
+  final bool isDarkTheme;
+  const DayMixin(
+      {Key? key,
+      required this.imageSrc,
+      required this.text,
+      required this.isDarkTheme})
       : super(key: key);
 
   @override
@@ -127,7 +137,7 @@ class DayMixin extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              color: Colors.grey.withOpacity(0.2),
+              color: CustomColors(this.isDarkTheme).tileColor,
             ),
             child: Row(
               children: [
@@ -142,7 +152,7 @@ class DayMixin extends StatelessWidget {
                   text,
                   style: TextStyle(
                       fontFamily: gothamFont,
-                      color: spotifyColors['white'],
+                      color: CustomColors(this.isDarkTheme).white,
                       fontSize: 14,
                       fontWeight: FontWeight.w900),
                 )
@@ -157,7 +167,9 @@ class DayMixin extends StatelessWidget {
 
 class CompositionListItem extends StatelessWidget {
   final Composition composition;
-  const CompositionListItem({Key? key, required this.composition})
+  final bool isDarkTheme;
+  const CompositionListItem(
+      {Key? key, required this.composition, required this.isDarkTheme})
       : super(key: key);
 
   @override
@@ -167,7 +179,7 @@ class CompositionListItem extends StatelessWidget {
         Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(4)),
-            color: Colors.grey.withOpacity(0.2),
+            color: CustomColors(this.isDarkTheme).tileColor,
           ),
           child: Row(
             children: [
@@ -186,7 +198,7 @@ class CompositionListItem extends StatelessWidget {
                     this.composition.name,
                     style: TextStyle(
                         fontFamily: gothamFont,
-                        color: spotifyColors['white'],
+                        color: CustomColors(this.isDarkTheme).white,
                         fontSize: 14,
                         fontWeight: FontWeight.w900),
                   ),
@@ -197,7 +209,7 @@ class CompositionListItem extends StatelessWidget {
                     this.composition.author,
                     style: TextStyle(
                         fontFamily: gothamFont,
-                        color: spotifyColors['white'],
+                        color: CustomColors(this.isDarkTheme).white,
                         fontSize: 10,
                         fontWeight: FontWeight.w600),
                   ),
@@ -221,6 +233,7 @@ class NewRelease extends StatelessWidget {
   final String composition;
   final String releaseType;
   late final Composition likedCompos;
+  final bool isDarkTheme;
 
   NewRelease(
       {Key? key,
@@ -228,7 +241,8 @@ class NewRelease extends StatelessWidget {
       required this.imageCompositionSrc,
       required this.singer,
       required this.composition,
-      required this.releaseType})
+      required this.releaseType,
+      required this.isDarkTheme})
       : super(key: key) {
     likedCompos = Composition(singer, composition, imageCompositionSrc);
   }
@@ -256,7 +270,7 @@ class NewRelease extends StatelessWidget {
                   'NEW RELEASE FROM',
                   style: TextStyle(
                       fontFamily: gothamFont,
-                      color: spotifyColors['light_grey'],
+                      color: CustomColors(this.isDarkTheme).lightGrey,
                       fontSize: 9,
                       fontWeight: FontWeight.w800),
                 ),
@@ -265,7 +279,7 @@ class NewRelease extends StatelessWidget {
                   this.singer,
                   style: TextStyle(
                       fontFamily: gothamFont,
-                      color: spotifyColors['white'],
+                      color: CustomColors(this.isDarkTheme).textColor,
                       fontSize: 20,
                       fontWeight: FontWeight.w800),
                 )
@@ -281,7 +295,7 @@ class NewRelease extends StatelessWidget {
           child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(10)),
-                color: Colors.grey.withOpacity(0.2),
+                color: CustomColors(this.isDarkTheme).tileColor,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -310,7 +324,7 @@ class NewRelease extends StatelessWidget {
                                   this.composition,
                                   style: TextStyle(
                                       fontFamily: gothamFont,
-                                      color: spotifyColors['white'],
+                                      color: CustomColors(this.isDarkTheme).white,
                                       fontSize: 15,
                                       fontWeight: FontWeight.w900),
                                 ),
@@ -319,7 +333,7 @@ class NewRelease extends StatelessWidget {
                                   '${this.releaseType} • ${this.singer}',
                                   style: TextStyle(
                                       fontFamily: gothamFont,
-                                      color: spotifyColors['white'],
+                                      color: CustomColors(this.isDarkTheme).white,
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600),
                                 ),
@@ -339,7 +353,7 @@ class NewRelease extends StatelessWidget {
                                             ? Icon(Icons.favorite)
                                             : Icon(Icons.favorite_border),
                                         iconSize: 30,
-                                        color: spotifyColors['light_grey'],
+                                        color: CustomColors(this.isDarkTheme).lightGrey,
                                         tooltip: 'Play the composition',
                                         onPressed: () {
                                           Provider.of<Library>(context,
@@ -349,7 +363,7 @@ class NewRelease extends StatelessWidget {
                                     IconButton(
                                         icon: Icon(Icons.play_circle),
                                         iconSize: 45,
-                                        color: spotifyColors['light_grey'],
+                                        color: CustomColors(this.isDarkTheme).lightGrey,
                                         tooltip: 'Play the composition',
                                         onPressed: () {}),
                                   ],
