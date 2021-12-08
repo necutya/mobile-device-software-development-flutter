@@ -1,3 +1,4 @@
+
 import 'package:base/models/dark_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -5,9 +6,11 @@ import '../common/components.dart';
 
 class MainPage extends StatefulWidget {
   late DarkThemeProvider dtp;
+  late void Function() onSettingsTap;
 
-  MainPage({Key? key, DarkThemeProvider? dtp}) : super(key: key) {
+  MainPage({Key? key, DarkThemeProvider? dtp, void Function()? onSettingsTap}) : super(key: key) {
     this.dtp = dtp!;
+    this.onSettingsTap = onSettingsTap!;
   }
 
   @override
@@ -15,13 +18,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  void _handleChangethemeTap(bool? value) {
-    if (value != null) {
-      setState(() {
-        widget.dtp.darkTheme = value;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,15 +42,10 @@ class _MainPageState extends State<MainPage> {
                   ),
                 ),
                 Expanded(
-                  flex: 2,
+                  flex: 1,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Switch(
-                        value: widget.dtp.darkTheme,
-                        onChanged: _handleChangethemeTap,
-                        activeColor: CustomColors(widget.dtp.darkTheme).black,
-                      ),
                       Icon(
                         Icons.notifications_none,
                         color: CustomColors(widget.dtp.darkTheme).textColor,
@@ -63,9 +54,12 @@ class _MainPageState extends State<MainPage> {
                         Icons.history,
                         color: CustomColors(widget.dtp.darkTheme).textColor,
                       ),
-                      Icon(
-                        Icons.settings,
-                        color: CustomColors(widget.dtp.darkTheme).textColor,
+                      IconButton(
+                        icon: Icon(
+                          Icons.settings,
+                          color: CustomColors(widget.dtp.darkTheme).textColor,
+                        ),
+                        onPressed: this.widget.onSettingsTap,
                       ),
                     ],
                   ),
@@ -87,14 +81,18 @@ class _MainPageState extends State<MainPage> {
                         DayMixin(
                             imageSrc: 'assets/images/joji.jpeg',
                             text: 'Day mixin #1',
-                            isDarkTheme: widget.dtp.darkTheme),
+                            isDarkTheme: widget.dtp.darkTheme,
+                            playlistId: "37i9dQZF1EIUFjCG9oFx2k?si=e24523bd6bb743fa"
+                            ),
                         SizedBox(
                           width: 10.0,
                         ),
                         DayMixin(
                             imageSrc: 'assets/images/tima.jpeg',
                             text: 'Day mixin #2',
-                            isDarkTheme: widget.dtp.darkTheme),
+                            isDarkTheme: widget.dtp.darkTheme,
+                            playlistId: "37i9dQZF1E35HpfmdpOmPR?si=514dc83243364071"
+                            ),
                       ],
                     ),
                   )
@@ -112,14 +110,16 @@ class _MainPageState extends State<MainPage> {
                         DayMixin(
                             imageSrc: 'assets/images/loqi.jpeg',
                             text: 'Day mixin #3',
-                            isDarkTheme: widget.dtp.darkTheme),
+                            isDarkTheme: widget.dtp.darkTheme,
+                            playlistId: "37i9dQZF1EIYKAmQjM0nAQ?si=c19685413c704266"),
                         SizedBox(
                           width: 10.0,
                         ),
                         DayMixin(
                             imageSrc: 'assets/images/liked.jpeg',
                             text: 'Liked songs',
-                            isDarkTheme: widget.dtp.darkTheme),
+                            isDarkTheme: widget.dtp.darkTheme,
+                            playlistId: "37i9dQZF1EUMDoJuT8yJsl?si=311eb1a9e12f4665"),
                       ],
                     ),
                   )
@@ -137,14 +137,16 @@ class _MainPageState extends State<MainPage> {
                         DayMixin(
                             imageSrc: 'assets/images/anacondaz.jpeg',
                             text: 'Day mixin #4',
-                            isDarkTheme: widget.dtp.darkTheme),
+                            isDarkTheme: widget.dtp.darkTheme,
+                            playlistId: "37i9dQZF1E369QCfppav3M?si=35df2b8198624c75"),
                         SizedBox(
                           width: 10.0,
                         ),
                         DayMixin(
                             imageSrc: 'assets/images/frank.jpeg',
                             text: 'Day mixin #5',
-                            isDarkTheme: widget.dtp.darkTheme),
+                            isDarkTheme: widget.dtp.darkTheme,
+                            playlistId: "37i9dQZF1E38DSV3eGEa4u?si=bd1142e332a54813"),
                       ],
                     ),
                   )

@@ -5,30 +5,29 @@ import 'package:provider/provider.dart';
 import '../common/components.dart';
 import '../models/composition.dart';
 
-class LibraryPage extends StatelessWidget {
+class ListPage extends StatelessWidget {
   late DarkThemeProvider dtp;
+  late String mainText; 
+  late List<Widget> Function(BuildContext context, DarkThemeProvider dtp) getListItems;
 
-  LibraryPage({
-    Key? key, DarkThemeProvider? dtp}) : super(key: key) {
+  ListPage({
+    Key? key, DarkThemeProvider? dtp, String? mainText, 
+    List<Widget> Function(BuildContext context, DarkThemeProvider dtp)? getListItems}) : super(key: key) {
     this.dtp = dtp!;
+    this.mainText = mainText!; 
+    this.getListItems = getListItems!; 
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> likedCompositions = [];
-    Provider.of<Library>(context, listen: false).items.forEach((element) {
-      likedCompositions.add(CompositionListItem(
-        composition: element,
-        isDarkTheme: this.dtp.darkTheme,
-      ).build(context));
-    });
+    
     return Padding(
             padding: EdgeInsets.fromLTRB(20, 55, 20, 5),
             // Nav bar
             child: Column(
               children: <Widget>[
                     Text(
-                      "Your library",
+                      this.mainText,
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w900,
@@ -40,7 +39,7 @@ class LibraryPage extends StatelessWidget {
                       height: 20,
                     )
                   ] +
-                  likedCompositions,
+                  getListItems(context, dtp),
             ));
   }
 }

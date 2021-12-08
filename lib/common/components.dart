@@ -1,3 +1,4 @@
+import 'package:base/common/requests.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:provider/provider.dart';
@@ -121,45 +122,59 @@ class DayMixin extends StatelessWidget {
   final String imageSrc;
   final String text;
   final bool isDarkTheme;
-  const DayMixin(
+  final String playlistId;
+
+  late Future<List<Composition>> futureCompositions;
+
+  DayMixin(
       {Key? key,
       required this.imageSrc,
       required this.text,
-      required this.isDarkTheme})
+      required this.isDarkTheme,
+      required this.playlistId})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return new Expanded(
       flex: 1,
-      child: Column(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              color: CustomColors(this.isDarkTheme).tileColor,
-            ),
-            child: Row(
-              children: [
-                ClipRRect(
-                    borderRadius:
-                        BorderRadius.horizontal(left: Radius.circular(4)),
-                    child: Image.asset(this.imageSrc, width: 52, height: 52)),
-                SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  text,
-                  style: TextStyle(
-                      fontFamily: gothamFont,
-                      color: CustomColors(this.isDarkTheme).white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w900),
-                )
-              ],
-            ),
-          )
-        ],
+      child: GestureDetector(
+        onTap: () {
+          var futureTask =
+              Navigator.pushNamed(context, '/playlist', arguments: playlistId);
+          futureTask.then((value) => ScaffoldMessenger.of(context)
+            ..removeCurrentSnackBar()
+            ..showSnackBar(SnackBar(content: Text('$value'))));
+        },
+        child: Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(4)),
+                color: CustomColors(this.isDarkTheme).tileColor,
+              ),
+              child: Row(
+                children: [
+                  ClipRRect(
+                      borderRadius:
+                          BorderRadius.horizontal(left: Radius.circular(4)),
+                      child: Image.asset(this.imageSrc, width: 52, height: 52)),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Text(
+                    text,
+                    style: TextStyle(
+                        fontFamily: gothamFont,
+                        color: CustomColors(this.isDarkTheme).white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w900),
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -186,34 +201,43 @@ class CompositionListItem extends StatelessWidget {
               ClipRRect(
                   borderRadius:
                       BorderRadius.horizontal(left: Radius.circular(4)),
-                  child: Image.asset(this.composition.cover,
-                      width: 70, height: 70)),
+                  child: Image.network(this.composition.cover,
+                      errorBuilder: (context, object, stacktrace) {
+                    return Image.asset(this.composition.cover,
+                        width: 70, height: 70);
+                  })),
               SizedBox(
                 width: 10,
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    this.composition.name,
-                    style: TextStyle(
-                        fontFamily: gothamFont,
-                        color: CustomColors(this.isDarkTheme).white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w900),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Text(
-                    this.composition.author,
-                    style: TextStyle(
-                        fontFamily: gothamFont,
-                        color: CustomColors(this.isDarkTheme).white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600),
-                  ),
-                ],
+              Container(
+                width: 250,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      this.composition.name,
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false,
+                      maxLines: 1,
+                      style: TextStyle(
+                          fontFamily: gothamFont,
+                          color: CustomColors(this.isDarkTheme).white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w900),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      this.composition.author,
+                      style: TextStyle(
+                          fontFamily: gothamFont,
+                          color: CustomColors(this.isDarkTheme).white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
               )
             ],
           ),
@@ -324,7 +348,8 @@ class NewRelease extends StatelessWidget {
                                   this.composition,
                                   style: TextStyle(
                                       fontFamily: gothamFont,
-                                      color: CustomColors(this.isDarkTheme).white,
+                                      color:
+                                          CustomColors(this.isDarkTheme).white,
                                       fontSize: 15,
                                       fontWeight: FontWeight.w900),
                                 ),
@@ -333,7 +358,8 @@ class NewRelease extends StatelessWidget {
                                   '${this.releaseType} • ${this.singer}',
                                   style: TextStyle(
                                       fontFamily: gothamFont,
-                                      color: CustomColors(this.isDarkTheme).white,
+                                      color:
+                                          CustomColors(this.isDarkTheme).white,
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600),
                                 ),
@@ -353,7 +379,8 @@ class NewRelease extends StatelessWidget {
                                             ? Icon(Icons.favorite)
                                             : Icon(Icons.favorite_border),
                                         iconSize: 30,
-                                        color: CustomColors(this.isDarkTheme).lightGrey,
+                                        color: CustomColors(this.isDarkTheme)
+                                            .lightGrey,
                                         tooltip: 'Play the composition',
                                         onPressed: () {
                                           Provider.of<Library>(context,
@@ -363,7 +390,8 @@ class NewRelease extends StatelessWidget {
                                     IconButton(
                                         icon: Icon(Icons.play_circle),
                                         iconSize: 45,
-                                        color: CustomColors(this.isDarkTheme).lightGrey,
+                                        color: CustomColors(this.isDarkTheme)
+                                            .lightGrey,
                                         tooltip: 'Play the composition',
                                         onPressed: () {}),
                                   ],

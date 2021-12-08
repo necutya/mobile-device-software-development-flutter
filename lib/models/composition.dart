@@ -10,6 +10,11 @@ class Composition {
 
   Composition(this.author, this.name, this.cover);
 
+  factory Composition.fromJson(Map<String, dynamic> json) {
+    return Composition(json['track']['artists'][0]['name'], json['track']['name'],
+        json['track']['album']['images'][2]['url']);
+  }
+
   bool operator ==(o) =>
       o is Composition && author == o.author && name == o.name;
   int get hashCode => hash2(author.hashCode, name.hashCode);
